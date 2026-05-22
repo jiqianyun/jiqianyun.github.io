@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>卷烟制丝生产能力计算器</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; background: #f4f4f4; }
+        .calculator { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; }
+        button { background: #0056b3; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        .result { margin-top: 20px; padding: 15px; background: #e9f7e1; border-left: 6px solid #2e7d32; border-radius: 8px; font-size: 18px; font-weight: bold; }
+        .formula { background: #f0f0f0; padding: 10px; font-family: monospace; font-size: 14px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="calculator">
+    <h2>📐 制丝总设计生产能力计算</h2>
+    <div class="form-group">
+        <label>年生产规模 (箱) :</label>
+        <input type="number" id="annualOutput" value="100000" step="1000">
+    </div>
+    <div class="form-group">
+        <label>单箱原料消耗 (kg/箱) :</label>
+        <input type="number" id="materialPerBox" value="42" step="1">
+    </div>
+    <div class="form-group">
+        <label>峰值系数 :</label>
+        <input type="number" id="peakFactor" value="1.1" step="0.05">
+    </div>
+    <div class="form-group">
+        <label>年作业时间 (h) :</label>
+        <input type="number" id="annualHours" value="4000" step="100">
+    </div>
+    <div class="form-group">
+        <label>整线综合有效作业率 (%) :</label>
+        <input type="number" id="efficiency" value="85" step="1">
+    </div>
+    <button onclick="calculate()">⚙️ 计算生产能力</button>
+    <div class="result" id="resultArea">
+        等待输入...
+    </div>
+    <div class="formula">
+        📌 公式：<br>
+        制丝总设计生产能力 (kg/h) = 年生产规模 × 单箱原料消耗 × 峰值系数 ÷ (年作业时间 × 综合有效作业率)
+    </div>
+</div>
+
+<script>
+    function calculate() {
+        let annual = parseFloat(document.getElementById('annualOutput').value);
+        let material = parseFloat(document.getElementById('materialPerBox').value);
+        let peak = parseFloat(document.getElementById('peakFactor').value);
+        let hours = parseFloat(document.getElementById('annualHours').value);
+        let eff = parseFloat(document.getElementById('efficiency').value) / 100;  // 转为小数
+
+        if (isNaN(annual) || isNaN(material) || isNaN(peak) || isNaN(hours) || isNaN(eff)) {
+            document.getElementById('resultArea').innerHTML = "⚠️ 请填写所有数值";
+            return;
+        }
+        if (hours <= 0 || eff <= 0) {
+            document.getElementById('resultArea').innerHTML = "⚠️ 年作业时间和有效作业率必须大于0";
+            return;
+        }
+        let capacity = (annual * material * peak) / (hours * eff);
+        document.getElementById('resultArea').innerHTML = 
+            `✅ 制丝总设计生产能力 = <strong>${capacity.toFixed(2)} kg/h</strong><br>
+             (基于年产 ${annual} 箱，单箱消耗 ${material} kg，峰值系数 ${peak}，年作业 ${hours} h，有效作业率 ${eff*100}%)`;
+    }
+    // 页面加载时自动计算一次
+    window.onload = calculate;
+</script>
+</body>
+</html>
